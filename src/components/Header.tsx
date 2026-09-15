@@ -8,6 +8,7 @@ import {
   Brain,
   Settings as SettingsIcon,
   Sparkles,
+  Cloud,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -16,6 +17,8 @@ interface HeaderProps {
   settings: AppSettings;
   picksCount: number;
   onOpenSettings: () => void;
+  activeRoomCode?: string | null;
+  onOpenSyncModal: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -24,6 +27,8 @@ export const Header: React.FC<HeaderProps> = ({
   settings,
   picksCount,
   onOpenSettings,
+  activeRoomCode,
+  onOpenSyncModal,
 }) => {
   return (
     <header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-40 shadow-md">
@@ -110,6 +115,35 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* In-App PWA Install Button */}
           <PWAInstallButton />
+
+          {/* Cloud Sync (6-Character Room) Button */}
+          <button
+            type="button"
+            id="open-sync-modal-btn"
+            onClick={onOpenSyncModal}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-semibold transition cursor-pointer ${
+              activeRoomCode
+                ? 'bg-emerald-950/70 border-emerald-600/60 text-emerald-300 hover:bg-emerald-900/60 shadow-sm'
+                : 'bg-slate-800 hover:bg-slate-750 border-slate-700 text-slate-300 hover:text-white'
+            }`}
+            title={
+              activeRoomCode
+                ? `Sync Room: ${activeRoomCode}. Click to manage sync or view QR code.`
+                : 'Sync with another device using a 6-character room code'
+            }
+          >
+            <Cloud className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">
+              {activeRoomCode ? (
+                <span className="flex items-center gap-1 font-mono">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  {activeRoomCode}
+                </span>
+              ) : (
+                'Cloud Sync'
+              )}
+            </span>
+          </button>
 
           {/* Settings / Backup Button */}
           <button

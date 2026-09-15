@@ -83,3 +83,23 @@ export interface TeamWithStats {
 }
 
 export type ActiveTab = 'matrix' | 'ratings' | 'strategy';
+
+export interface RoomSyncPayload {
+  code: string;
+  ratings: TeamRating[];
+  picks: SurvivorPick[];
+  settings: AppSettings;
+  lockedWeeks: Record<number, LockedWeekData>;
+  updatedAt: string;
+  version: number;
+  deviceLabel?: string;
+}
+
+export interface SyncApiResponse {
+  success: boolean;
+  code?: string;
+  data?: RoomSyncPayload;
+  updatedAt?: string;
+  error?: string;
+  kvConnected?: boolean;
+}

@@ -56,6 +56,9 @@ const LS_KEYS = {
   SETTINGS: 'nfl_survivor_settings',
   SCHEDULE_VERSION: 'nfl_survivor_schedule_version',
   LOCKED_WEEKS: 'nfl_survivor_locked_weeks',
+  ROOM_CODE: 'nfl_survivor_room_code',
+  ROOM_AUTO_SYNC: 'nfl_survivor_room_auto_sync',
+  ROOM_LAST_SYNCED: 'nfl_survivor_room_last_synced',
 };
 
 const CURRENT_SCHEDULE_VERSION = '2026-v2';
@@ -516,5 +519,58 @@ export const StorageService = {
     }
 
     return { ratings, picks, settings, lockedWeeks: parsed.lockedWeeks };
+  },
+
+  getActiveRoomCode(): string | null {
+    try {
+      const code = localStorage.getItem(LS_KEYS.ROOM_CODE);
+      return code ? code.trim().toUpperCase() : null;
+    } catch {
+      return null;
+    }
+  },
+
+  setActiveRoomCode(code: string | null): void {
+    try {
+      if (code) {
+        localStorage.setItem(LS_KEYS.ROOM_CODE, code.trim().toUpperCase());
+      } else {
+        localStorage.removeItem(LS_KEYS.ROOM_CODE);
+      }
+    } catch {
+      // ignore
+    }
+  },
+
+  getAutoSyncEnabled(): boolean {
+    try {
+      return localStorage.getItem(LS_KEYS.ROOM_AUTO_SYNC) === 'true';
+    } catch {
+      return false;
+    }
+  },
+
+  setAutoSyncEnabled(enabled: boolean): void {
+    try {
+      localStorage.setItem(LS_KEYS.ROOM_AUTO_SYNC, enabled ? 'true' : 'false');
+    } catch {
+      // ignore
+    }
+  },
+
+  getLastSyncedAt(): string | null {
+    try {
+      return localStorage.getItem(LS_KEYS.ROOM_LAST_SYNCED);
+    } catch {
+      return null;
+    }
+  },
+
+  setLastSyncedAt(timestamp: string): void {
+    try {
+      localStorage.setItem(LS_KEYS.ROOM_LAST_SYNCED, timestamp);
+    } catch {
+      // ignore
+    }
   },
 };

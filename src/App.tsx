@@ -18,13 +18,22 @@ import { SurvivorMatrix } from './components/SurvivorMatrix';
 import { RatingEditor } from './components/RatingEditor';
 import { StrategyAdvisor } from './components/StrategyAdvisor';
 import { SettingsModal } from './components/SettingsModal';
+import { CloudSyncModal } from './components/CloudSyncModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { getRoomCodeFromUrl, pullRoomData, pushRoomData } from './services/syncService';
 import { Loader2 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('matrix');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Multi-device sync state
+  const [activeRoomCode, setActiveRoomCode] = useState<string | null>(null);
+  const [autoSync, setAutoSync] = useState<boolean>(false);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
+  const isInitialLoadRef = React.useRef(true);
 
   // Core persistent states
   const [ratings, setRatings] = useState<TeamRating[]>(INITIAL_RATINGS);
@@ -103,15 +112,78 @@ export default function App() {
 
           setLockedWeeks(cleanLocked);
         }
+
+        // Initialize multi-device room code state
+        const urlRoom = getRoomCodeFromUrl();
+        const storedRoom = StorageService.getActiveRoomCode();
+        const initialRoom = urlRoom || storedRoom;
+
+        if (initialRoom) {
+          setActiveRoomCode(initialRoom);
+          StorageService.setActiveRoomCode(initialRoom);
+
+          // If launched with URL room code, auto-pull latest state
+          if (urlRoom) {
+            try {
+              const cloudData = await pullRoomData(urlRoom);
+              if (cloudData && cloudData.data) {
+                const payload = cloudData.data;
+                if (payload.ratings && payload.ratings.length > 0) setRatings(payload.ratings);
+                if (payload.picks) setPicks(payload.picks);
+                if (payload.settings) setSettings(payload.settings);
+                if (payload.lockedWeeks) setLockedWeeks(payload.lockedWeeks);
+                const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                StorageService.setLastSyncedAt(now);
+                setLastSyncedAt(now);
+              }
+            } catch (syncErr) {
+              console.warn('Initial room auto-fetch notice:', syncErr);
+            }
+          }
+        }
+
+        setAutoSync(StorageService.getAutoSyncEnabled());
+        setLastSyncedAt(StorageService.getLastSyncedAt());
       } catch (err) {
         console.error('Failed to initialize local database:', err);
       } finally {
         setIsLoading(false);
+        // Delay enabling auto-sync pushing until first render settles
+        setTimeout(() => {
+          isInitialLoadRef.current = false;
+        }, 1200);
       }
     }
 
     initData();
   }, []);
+
+  // Background Auto-Sync Effect (debounced)
+  useEffect(() => {
+    if (isLoading || isInitialLoadRef.current || !autoSync || !activeRoomCode) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      try {
+        await pushRoomData(activeRoomCode, {
+          ratings,
+          picks,
+          settings,
+          lockedWeeks,
+          updatedAt: new Date().toISOString(),
+          version: 2,
+        });
+        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        StorageService.setLastSyncedAt(now);
+        setLastSyncedAt(now);
+      } catch (err) {
+        console.warn('Background auto-sync failed:', err);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [ratings, picks, settings, lockedWeeks, autoSync, activeRoomCode, isLoading]);
 
   // Compute full 32-team dataset with spreads, future values, and status
   const teamsWithStats = useMemo(() => {
@@ -323,6 +395,8 @@ export default function App() {
         settings={settings}
         picksCount={picks.length}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        activeRoomCode={activeRoomCode}
+        onOpenSyncModal={() => setIsSyncModalOpen(true)}
       />
 
       {/* Week-by-Week Survivor Pick Path Timeline */}
@@ -392,6 +466,22 @@ export default function App() {
         onDataImported={handleDataImported}
         onClearPicks={handleClearAllPicks}
         onResetRatings={handleResetRatings}
+      />
+
+      {/* Multi-Device Room Sync Modal */}
+      <CloudSyncModal
+        isOpen={isSyncModalOpen}
+        onClose={() => setIsSyncModalOpen(false)}
+        ratings={ratings}
+        picks={picks}
+        settings={settings}
+        lockedWeeks={lockedWeeks}
+        onDataLoaded={handleDataImported}
+        activeRoomCode={activeRoomCode}
+        onActiveRoomChange={setActiveRoomCode}
+        autoSync={autoSync}
+        onAutoSyncChange={setAutoSync}
+        lastSyncedAt={lastSyncedAt}
       />
 
       {/* Offline Connectivity Notification Banner */}
