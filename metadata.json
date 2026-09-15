@@ -1,0 +1,6 @@
+{
+  "name": "NFL Survivor Pool Strategy",
+  "description": "Progressive Web App for NFL Survivor Pool Strategy featuring 32-team power ratings, market blending, 18-week schedule matrix, future value calculations, and offline persistence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
