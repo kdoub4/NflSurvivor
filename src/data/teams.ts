@@ -53,52 +53,52 @@ export const NFL_TEAMS: NFLTeam[] = [
 // Baseline Power Ratings: Market Ratings sourced directly from https://stats.inpredictable.com/rankings/nfl.php
 export const INITIAL_RATINGS: TeamRating[] = [
   // AFC EAST
-  { teamId: 'BUF', userRating: 5.0, marketRating: 4.4, customHfa: 1.8 },
-  { teamId: 'MIA', userRating: -3.0, marketRating: -5.9 },
-  { teamId: 'NYJ', userRating: -2.5, marketRating: -4.2 },
-  { teamId: 'NE', userRating: 2.0, marketRating: 2.9 },
+  { teamId: 'BUF', userRating: 5.0, marketRating: 4.7, customHfa: 1.8 },
+  { teamId: 'MIA', userRating: -3.0, marketRating: -6.8 },
+  { teamId: 'NYJ', userRating: -2.5, marketRating: -5.2 },
+  { teamId: 'NE', userRating: 2.0, marketRating: 0.5 },
 
   // AFC NORTH
-  { teamId: 'BAL', userRating: 4.5, marketRating: 3.4, customHfa: 1.8 },
-  { teamId: 'CIN', userRating: 2.0, marketRating: 1.5 },
-  { teamId: 'CLE', userRating: -4.0, marketRating: -5.6 },
-  { teamId: 'PIT', userRating: -0.5, marketRating: -1.2, customHfa: 1.7 },
+  { teamId: 'BAL', userRating: 4.5, marketRating: 4.3, customHfa: 1.8 },
+  { teamId: 'CIN', userRating: 2.0, marketRating: 1.8 },
+  { teamId: 'CLE', userRating: -4.0, marketRating: -6.6 },
+  { teamId: 'PIT', userRating: -0.5, marketRating: -2.2, customHfa: 1.7 },
 
   // AFC SOUTH
-  { teamId: 'HOU', userRating: 2.0, marketRating: 1.2 },
-  { teamId: 'IND', userRating: -1.0, marketRating: -1.8 },
-  { teamId: 'JAX', userRating: 1.0, marketRating: 1.2 },
-  { teamId: 'TEN', userRating: -3.5, marketRating: -4.4 },
+  { teamId: 'HOU', userRating: 2.0, marketRating: 2.6 },
+  { teamId: 'IND', userRating: -1.0, marketRating: -1.6 },
+  { teamId: 'JAX', userRating: 1.0, marketRating: 0.9 },
+  { teamId: 'TEN', userRating: -3.5, marketRating: -5.1 },
 
   // AFC WEST
-  { teamId: 'KC', userRating: 5.5, marketRating: 3.1, customHfa: 2.2 },
-  { teamId: 'LAC', userRating: 2.0, marketRating: 1.9 },
-  { teamId: 'DEN', userRating: 2.0, marketRating: 1.9, customHfa: 2.1 },
-  { teamId: 'LV', userRating: -3.0, marketRating: -4.1 },
+  { teamId: 'KC', userRating: 5.5, marketRating: 3.4, customHfa: 2.2 },
+  { teamId: 'LAC', userRating: 2.0, marketRating: 1.8 },
+  { teamId: 'DEN', userRating: 2.0, marketRating: 1.0, customHfa: 2.1 },
+  { teamId: 'LV', userRating: -3.0, marketRating: -3.2 },
 
   // NFC EAST
-  { teamId: 'PHI', userRating: 3.5, marketRating: 2.6, customHfa: 1.9 },
-  { teamId: 'DAL', userRating: 2.5, marketRating: 2.2 },
-  { teamId: 'WAS', userRating: -0.5, marketRating: -1.1 },
-  { teamId: 'NYG', userRating: -2.0, marketRating: -2.5 },
+  { teamId: 'PHI', userRating: 3.5, marketRating: 3.9, customHfa: 1.9 },
+  { teamId: 'DAL', userRating: 2.5, marketRating: 1.6 },
+  { teamId: 'WAS', userRating: -0.5, marketRating: -1.0 },
+  { teamId: 'NYG', userRating: -2.0, marketRating: -1.0 },
 
   // NFC NORTH
-  { teamId: 'DET', userRating: 4.0, marketRating: 2.5, customHfa: 1.8 },
-  { teamId: 'GB', userRating: 2.5, marketRating: 1.5, customHfa: 2.0 },
-  { teamId: 'MIN', userRating: 1.5, marketRating: 1.3 },
-  { teamId: 'CHI', userRating: 2.5, marketRating: 2.1 },
+  { teamId: 'DET', userRating: 4.0, marketRating: 0.8, customHfa: 1.8 },
+  { teamId: 'GB', userRating: 2.5, marketRating: -0.2, customHfa: 2.0 },
+  { teamId: 'MIN', userRating: 1.5, marketRating: 0.7 },
+  { teamId: 'CHI', userRating: 2.5, marketRating: 4.1 },
 
   // NFC SOUTH
-  { teamId: 'TB', userRating: 0.0, marketRating: -0.3 },
-  { teamId: 'ATL', userRating: -2.0, marketRating: -3.0 },
-  { teamId: 'NO', userRating: -2.0, marketRating: -2.8 },
-  { teamId: 'CAR', userRating: -2.0, marketRating: -2.7 },
+  { teamId: 'TB', userRating: 0.0, marketRating: 0.2 },
+  { teamId: 'ATL', userRating: -2.0, marketRating: -5.8 },
+  { teamId: 'NO', userRating: -2.0, marketRating: -1.9 },
+  { teamId: 'CAR', userRating: -2.0, marketRating: -2.1 },
 
   // NFC WEST
-  { teamId: 'SF', userRating: 3.5, marketRating: 2.3, customHfa: 1.7 },
-  { teamId: 'LAR', userRating: 5.0, marketRating: 5.8 },
-  { teamId: 'ARI', userRating: -4.5, marketRating: -6.3 },
-  { teamId: 'SEA', userRating: 4.0, marketRating: 4.1, customHfa: 2.0 },
+  { teamId: 'SF', userRating: 3.5, marketRating: 4.7, customHfa: 1.7 },
+  { teamId: 'LAR', userRating: 5.0, marketRating: 4.8 },
+  { teamId: 'ARI', userRating: -4.5, marketRating: -2.2 },
+  { teamId: 'SEA', userRating: 4.0, marketRating: 3.0, customHfa: 2.0 },
 ];
 
 export const TEAM_MAP = new Map<string, NFLTeam>(

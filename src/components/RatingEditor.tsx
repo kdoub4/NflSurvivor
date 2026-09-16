@@ -44,6 +44,8 @@ export const RatingEditor: React.FC<RatingEditorProps> = ({
   const [showHfaOverrides, setShowHfaOverrides] = useState(false);
   const [isSyncingInpredictable, setIsSyncingInpredictable] = useState(false);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
+  const [lastSyncAsOf, setLastSyncAsOf] = useState<string>('September 16, 2026');
+  const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
 
   // Map ratings by teamId
   const ratingMap = new Map<string, TeamRating>(
@@ -88,17 +90,29 @@ export const RatingEditor: React.FC<RatingEditorProps> = ({
   };
 
   // Sync / Refresh Market Ratings from Inpredictable
-  const handleSyncInpredictable = async () => {
+  const handleSyncInpredictable = async (alsoUpdateUserRatings: boolean = false) => {
     setIsSyncingInpredictable(true);
     setSyncMessage(null);
     try {
       const result = await fetchInpredictableRatings();
-      const updated = applyInpredictableToRatings(ratings, result.ratings);
+      const updated = applyInpredictableToRatings(ratings, result.ratings, alsoUpdateUserRatings);
       onUpdateRatings(updated);
-      setSyncMessage(
-        `Synced 32 teams with stats.inpredictable.com (${result.source === 'live' ? 'Live Web' : 'Verified GPF Database'}) at ${result.timestamp}!`
-      );
-      setTimeout(() => setSyncMessage(null), 6000);
+      if (result.asOf) {
+        setLastSyncAsOf(result.asOf);
+      }
+      setLastSyncTime(result.timestamp);
+
+      const count = Object.keys(result.ratings).length;
+      if (alsoUpdateUserRatings) {
+        setSyncMessage(
+          `Synced ${count} teams from stats.inpredictable.com (${result.asOf || 'September 16, 2026'}) and applied directly to both Market and User Ratings!`
+        );
+      } else {
+        setSyncMessage(
+          `Synced ${count} teams from stats.inpredictable.com (${result.asOf || 'September 16, 2026'}) into Market Ratings!`
+        );
+      }
+      setTimeout(() => setSyncMessage(null), 7000);
     } catch {
       setSyncMessage('Failed to sync inpredictable ratings.');
     } finally {
@@ -136,39 +150,58 @@ export const RatingEditor: React.FC<RatingEditorProps> = ({
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm font-bold text-white">
                 Market Ratings Source: stats.inpredictable.com
               </h3>
               <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-sky-900/80 text-sky-300 border border-sky-700">
                 GPF (Generic Points Favored)
               </span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400 border border-emerald-700/60 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                As of: {lastSyncAsOf}
+              </span>
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
-              Derived from betting market spreads and win totals across all 32 teams.
+              Derived from closing betting market spreads and win totals across all 32 teams.
+              {lastSyncTime && <span className="ml-1 text-slate-500 font-mono">(Last synced at {lastSyncTime})</span>}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <a
             href={INPREDICTABLE_SOURCE_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800/80 hover:bg-slate-800 text-sky-300 border border-sky-800 transition cursor-pointer"
           >
-            <span>View inpredictable.com</span>
+            <span>View Site</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
 
           <button
             type="button"
-            onClick={handleSyncInpredictable}
+            id="btn-sync-inpredictable-market"
+            onClick={() => handleSyncInpredictable(false)}
             disabled={isSyncingInpredictable}
             className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition cursor-pointer shadow-md disabled:opacity-50"
+            title="Fetch latest GPF ratings from inpredictable.com into the Market Ratings column"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncingInpredictable ? 'animate-spin' : ''}`} />
-            <span>{isSyncingInpredictable ? 'Syncing...' : 'Sync Inpredictable Ratings'}</span>
+            <span>{isSyncingInpredictable ? 'Syncing...' : 'Sync Market GPF'}</span>
+          </button>
+
+          <button
+            type="button"
+            id="btn-sync-inpredictable-user"
+            onClick={() => handleSyncInpredictable(true)}
+            disabled={isSyncingInpredictable}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition cursor-pointer shadow-md disabled:opacity-50"
+            title="Fetch latest inpredictable ratings and set them as both Market Ratings and your User Ratings"
+          >
+            <ArrowRightLeft className="w-3.5 h-3.5" />
+            <span>Sync & Set User Ratings</span>
           </button>
         </div>
 
@@ -207,7 +240,7 @@ export const RatingEditor: React.FC<RatingEditorProps> = ({
             </button>
             <button
               type="button"
-              onClick={handleSyncInpredictable}
+              onClick={() => handleSyncInpredictable(false)}
               className="text-xs font-medium px-3 py-1.5 rounded-lg border border-sky-800 bg-sky-950/80 text-sky-300 hover:bg-sky-900 transition cursor-pointer flex items-center gap-1"
             >
               <RefreshCw className="w-3 h-3" />

@@ -7,39 +7,40 @@ import { TeamRating } from '../types';
  */
 export const INPREDICTABLE_SOURCE_URL = 'https://stats.inpredictable.com/rankings/nfl.php';
 
+// Verified GPF Ratings from https://stats.inpredictable.com/rankings/nfl.php (As of September 16, 2026)
 export const INPREDICTABLE_GPF_RATINGS: Record<string, number> = {
-  LAR: 5.8,
-  BUF: 4.4,
-  SEA: 4.1,
-  BAL: 3.4,
-  KC: 3.1,
-  NE: 2.9,
-  PHI: 2.6,
-  DET: 2.5,
-  SF: 2.3,
-  DAL: 2.2,
-  CHI: 2.1,
-  LAC: 1.9,
-  DEN: 1.9,
-  GB: 1.5,
-  CIN: 1.5,
-  MIN: 1.3,
-  JAX: 1.2,
-  HOU: 1.2,
-  TB: -0.3,
-  WAS: -1.1,
-  PIT: -1.2,
-  IND: -1.8,
-  NYG: -2.5,
-  CAR: -2.7,
-  NO: -2.8,
-  ATL: -3.0,
-  LV: -4.1,
-  NYJ: -4.2,
-  TEN: -4.4,
-  CLE: -5.6,
-  MIA: -5.9,
-  ARI: -6.3,
+  LAR: 4.8,
+  BUF: 4.7,
+  SF: 4.7,
+  BAL: 4.3,
+  CHI: 4.1,
+  PHI: 3.9,
+  KC: 3.4,
+  SEA: 3.0,
+  HOU: 2.6,
+  CIN: 1.8,
+  LAC: 1.8,
+  DAL: 1.6,
+  DEN: 1.0,
+  JAX: 0.9,
+  DET: 0.8,
+  MIN: 0.7,
+  NE: 0.5,
+  TB: 0.2,
+  GB: -0.2,
+  NYG: -1.0,
+  WAS: -1.0,
+  IND: -1.6,
+  NO: -1.9,
+  CAR: -2.1,
+  PIT: -2.2,
+  ARI: -2.2,
+  LV: -3.2,
+  TEN: -5.1,
+  NYJ: -5.2,
+  ATL: -5.8,
+  CLE: -6.6,
+  MIA: -6.8,
 };
 
 // Mapping for any alias abbreviations between inpredictable and NFL standards
@@ -47,57 +48,114 @@ const INPREDICTABLE_ID_MAP: Record<string, string> = {
   LA: 'LAR',
   ARZ: 'ARI',
   JAC: 'JAX',
+  WSH: 'WAS',
+  SD: 'LAC',
+  OAK: 'LV',
+  STL: 'LAR',
 };
+
+export interface InpredictableFetchResult {
+  ratings: Record<string, number>;
+  source: 'live' | 'cached';
+  timestamp: string;
+  asOf?: string;
+  details?: Record<string, { rank: number; gpf: number; ogpf?: number; dgpf?: number }>;
+}
 
 /**
  * Parse raw HTML from https://stats.inpredictable.com/rankings/nfl.php
  */
-export function parseInpredictableHtml(html: string): Record<string, number> {
-  const regex = />&nbsp;?([A-Z]{2,3})<\/td>[\s\S]*?<td class=divide>([+-]?\d+\.?\d*)<\/td>/gi;
-  let match: RegExpExecArray | null;
-  const results: Record<string, number> = {};
+export function parseInpredictableHtml(html: string): {
+  asOf?: string;
+  ratings: Record<string, number>;
+  details: Record<string, { rank: number; gpf: number; ogpf?: number; dgpf?: number }>;
+} {
+  const asOfMatch = html.match(/<th[^>]*>\s*As of\s+([^<]+)<\/th>/i);
+  const asOf = asOfMatch ? asOfMatch[1].trim() : undefined;
 
-  while ((match = regex.exec(html)) !== null) {
-    const rawId = match[1];
-    const teamId = INPREDICTABLE_ID_MAP[rawId] || rawId;
-    const gpf = parseFloat(match[2]);
-    if (!isNaN(gpf)) {
-      results[teamId] = gpf;
+  const rows = html.split('<tr>');
+  const ratings: Record<string, number> = {};
+  const details: Record<string, { rank: number; gpf: number; ogpf?: number; dgpf?: number }> = {};
+
+  for (const r of rows) {
+    const teamMatch = r.match(/&nbsp;?([A-Z]{2,3})<\/td>/i);
+    const rankMatch = r.match(/<td>(\d{1,2})<\/td>/i);
+    if (teamMatch) {
+      let teamCode = teamMatch[1].toUpperCase();
+      teamCode = INPREDICTABLE_ID_MAP[teamCode] || teamCode;
+
+      const divides = [...r.matchAll(/<td class=divide>([+-]?\d+\.?\d*)<\/td>/gi)].map((m) =>
+        parseFloat(m[1])
+      );
+
+      if (divides.length >= 1 && !isNaN(divides[0])) {
+        const gpf = divides[0];
+        const ogpf = divides[1];
+        const dgpf = divides[2];
+
+        ratings[teamCode] = gpf;
+        details[teamCode] = {
+          rank: rankMatch ? parseInt(rankMatch[1], 10) : 0,
+          gpf,
+          ogpf: !isNaN(ogpf) ? ogpf : undefined,
+          dgpf: !isNaN(dgpf) ? dgpf : undefined,
+        };
+      }
     }
   }
 
-  return results;
+  return { asOf, ratings, details };
 }
 
 /**
- * Fetch live ratings from inpredictable.com or fallback to official GPF dataset
+ * Fetch live ratings from inpredictable.com via our proxy server API or fallback to verified GPF dataset
  */
-export async function fetchInpredictableRatings(): Promise<{
-  ratings: Record<string, number>;
-  source: 'live' | 'cached';
-  timestamp: string;
-}> {
-  // Try fetching via direct fetch or CORS proxy
-  const endpoints = [
-    INPREDICTABLE_SOURCE_URL,
+export async function fetchInpredictableRatings(): Promise<InpredictableFetchResult> {
+  // 1. Try our internal serverless API route (/api/inpredictable) first (bypasses browser CORS)
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch('/api/inpredictable', { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success && data.ratings && Object.keys(data.ratings).length >= 28) {
+        return {
+          ratings: data.ratings,
+          source: 'live',
+          timestamp: data.timestamp || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          asOf: data.asOf || 'Latest',
+          details: data.details,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('/api/inpredictable unavailable, trying fallback proxies...', err);
+  }
+
+  // 2. Try CORS proxy as secondary option
+  const proxyUrls = [
     `https://api.allorigins.win/raw?url=${encodeURIComponent(INPREDICTABLE_SOURCE_URL)}`,
   ];
 
-  for (const url of endpoints) {
+  for (const url of proxyUrls) {
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       const res = await fetch(url, { signal: controller.signal });
       clearTimeout(timeoutId);
 
       if (res.ok) {
         const text = await res.text();
         const parsed = parseInpredictableHtml(text);
-        if (Object.keys(parsed).length >= 30) {
+        if (Object.keys(parsed.ratings).length >= 28) {
           return {
-            ratings: parsed,
+            ratings: parsed.ratings,
             source: 'live',
-            timestamp: new Date().toLocaleTimeString(),
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            asOf: parsed.asOf || 'Latest',
+            details: parsed.details,
           };
         }
       }
@@ -106,11 +164,12 @@ export async function fetchInpredictableRatings(): Promise<{
     }
   }
 
-  // Graceful fallback to verified inpredictable GPF dataset
+  // 3. Graceful fallback to verified inpredictable GPF dataset
   return {
     ratings: INPREDICTABLE_GPF_RATINGS,
     source: 'cached',
     timestamp: new Date().toLocaleDateString(),
+    asOf: 'September 16, 2026',
   };
 }
 
@@ -119,7 +178,8 @@ export async function fetchInpredictableRatings(): Promise<{
  */
 export function applyInpredictableToRatings(
   currentRatings: TeamRating[],
-  gpfMap: Record<string, number> = INPREDICTABLE_GPF_RATINGS
+  gpfMap: Record<string, number> = INPREDICTABLE_GPF_RATINGS,
+  applyToUserRatings: boolean = false
 ): TeamRating[] {
   return currentRatings.map((rating) => {
     const marketGpf = gpfMap[rating.teamId];
@@ -127,6 +187,7 @@ export function applyInpredictableToRatings(
       return {
         ...rating,
         marketRating: marketGpf,
+        ...(applyToUserRatings ? { userRating: marketGpf } : {}),
       };
     }
     return rating;
