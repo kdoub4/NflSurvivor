@@ -14,7 +14,6 @@ import {
   Eye,
   EyeOff,
   SlidersHorizontal,
-  Globe,
   Lock,
   Unlock,
   Moon,
@@ -532,65 +531,6 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
               <RotateCcw className="w-3 h-3 ml-0.5" />
             </button>
           )}
-        </div>
-
-        {/* Heatmap Legend */}
-        <div className="flex items-center gap-3 text-xs">
-          <span className="text-slate-400 hidden lg:inline">Heatmap:</span>
-          <div className="flex items-center gap-1.5">
-            <div className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-emerald-950 border border-emerald-600 shadow-xs" />
-              <span className="text-[11px] text-slate-300">≤ -7 Fav</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-emerald-900/50 border border-emerald-700/50" />
-              <span className="text-[11px] text-slate-300">-3.5 to -6.5</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-slate-800 border border-slate-700" />
-              <span className="text-[11px] text-slate-400">-3 to +3</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="w-3 h-3 rounded bg-rose-950/50 border border-rose-800/50" />
-              <span className="text-[11px] text-slate-400">&gt; +3 Dog</span>
-            </div>
-            <div className="flex items-center gap-1 pl-2 border-l border-slate-700/80">
-              <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] font-mono font-bold bg-sky-950/90 text-sky-300 border border-sky-700/70">
-                <Globe className="w-2.5 h-2.5 text-sky-400" />
-                INTL
-              </span>
-              <span className="text-[11px] text-sky-300 hidden md:inline" title="International neutral site games exclude Home Field Advantage">
-                Neutral (0 HFA)
-              </span>
-            </div>
-            <div className="flex items-center gap-1 pl-2 border-l border-slate-700/80">
-              <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8.5px] font-mono font-bold bg-amber-950/95 text-amber-300 border border-amber-600/80 shadow-xs">
-                <span className="text-[7.5px] text-amber-400 font-normal">CL</span>
-                <span>Odds</span>
-              </span>
-              <span className="text-[11px] text-amber-300 hidden md:inline" title="Fox Sports closing odds replace Home/Away/Intl when week is locked">
-                Fox Sports Closing
-              </span>
-            </div>
-            <div className="flex items-center gap-1 pl-2 border-l border-slate-700/80">
-              <span
-                className={`inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] font-mono font-bold ${
-                  isGreyOutMondayNight
-                    ? 'bg-slate-800 text-slate-400 border border-slate-700'
-                    : 'bg-indigo-950/90 text-indigo-300 border border-indigo-700/70'
-                }`}
-              >
-                <Moon className={`w-2.5 h-2.5 ${isGreyOutMondayNight ? 'text-slate-400' : 'text-indigo-400'}`} />
-                MNF
-              </span>
-              <span
-                className={`text-[11px] hidden md:inline ${isGreyOutMondayNight ? 'text-slate-400' : 'text-indigo-300'}`}
-                title="Monday Night Football games"
-              >
-                {isGreyOutMondayNight ? 'MNF (Greyed Out)' : 'Monday Night'}
-              </span>
-            </div>
-          </div>
         </div>
       </div>
 

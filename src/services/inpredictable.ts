@@ -7,40 +7,40 @@ import { TeamRating } from '../types';
  */
 export const INPREDICTABLE_SOURCE_URL = 'https://stats.inpredictable.com/rankings/nfl.php';
 
-// Verified GPF Ratings from https://stats.inpredictable.com/rankings/nfl.php (As of September 16, 2026)
+// Verified GPF Ratings from https://stats.inpredictable.com/rankings/nfl.php (As of September 23, 2026)
 export const INPREDICTABLE_GPF_RATINGS: Record<string, number> = {
-  LAR: 4.8,
-  BUF: 4.7,
-  SF: 4.7,
-  BAL: 4.3,
-  CHI: 4.1,
-  PHI: 3.9,
-  KC: 3.4,
-  SEA: 3.0,
-  HOU: 2.6,
-  CIN: 1.8,
-  LAC: 1.8,
-  DAL: 1.6,
-  DEN: 1.0,
-  JAX: 0.9,
-  DET: 0.8,
-  MIN: 0.7,
-  NE: 0.5,
-  TB: 0.2,
-  GB: -0.2,
-  NYG: -1.0,
-  WAS: -1.0,
-  IND: -1.6,
-  NO: -1.9,
-  CAR: -2.1,
-  PIT: -2.2,
-  ARI: -2.2,
-  LV: -3.2,
-  TEN: -5.1,
-  NYJ: -5.2,
-  ATL: -5.8,
-  CLE: -6.6,
-  MIA: -6.8,
+  LAR: 6.5,
+  BUF: 5.5,
+  BAL: 4.7,
+  SEA: 4.5,
+  KC: 4.5,
+  SF: 4.5,
+  PHI: 3.3,
+  CIN: 3.2,
+  HOU: 3.1,
+  JAX: 2.2,
+  DEN: 2.1,
+  DET: 1.8,
+  NE: 1.6,
+  DAL: 1.3,
+  MIN: 0.2,
+  LAC: 0.0,
+  GB: -0.5,
+  IND: -0.6,
+  CHI: -1.7,
+  PIT: -2.0,
+  NO: -2.2,
+  NYG: -2.3,
+  CAR: -2.7,
+  ARI: -2.8,
+  TB: -3.0,
+  NYJ: -3.2,
+  LV: -3.4,
+  TEN: -3.8,
+  WAS: -4.1,
+  ATL: -5.5,
+  CLE: -7.0,
+  MIA: -8.4,
 };
 
 // Mapping for any alias abbreviations between inpredictable and NFL standards
@@ -88,10 +88,15 @@ export function parseInpredictableHtml(html: string): {
         parseFloat(m[1])
       );
 
-      if (divides.length >= 1 && !isNaN(divides[0])) {
-        const gpf = divides[0];
-        const ogpf = divides[1];
-        const dgpf = divides[2];
+      // On stats.inpredictable.com, the columns with class=divide are:
+      // divides[0] = LstWk (previous week rank: 1-32)
+      // divides[1] = GPF (overall generic points favored rating)
+      // divides[2] = oGPF (offensive GPF rating)
+      // divides[3] = dGPF (defensive GPF rating)
+      if (divides.length >= 2 && !isNaN(divides[1])) {
+        const gpf = divides[1];
+        const ogpf = divides[2];
+        const dgpf = divides[3];
 
         ratings[teamCode] = gpf;
         details[teamCode] = {
@@ -99,6 +104,14 @@ export function parseInpredictableHtml(html: string): {
           gpf,
           ogpf: !isNaN(ogpf) ? ogpf : undefined,
           dgpf: !isNaN(dgpf) ? dgpf : undefined,
+        };
+      } else if (divides.length === 1 && !isNaN(divides[0])) {
+        // Fallback if table layout ever omits LstWk
+        const gpf = divides[0];
+        ratings[teamCode] = gpf;
+        details[teamCode] = {
+          rank: rankMatch ? parseInt(rankMatch[1], 10) : 0,
+          gpf,
         };
       }
     }

@@ -62,10 +62,15 @@ export default async function handler(req: any, res: any) {
           parseFloat(m[1])
         );
 
-        if (divides.length >= 1 && !isNaN(divides[0])) {
-          const gpf = divides[0];
-          const ogpf = divides[1];
-          const dgpf = divides[2];
+        // On stats.inpredictable.com, the columns with class=divide are:
+        // divides[0] = LstWk (previous week rank: 1-32)
+        // divides[1] = GPF (overall generic points favored rating)
+        // divides[2] = oGPF (offensive GPF rating)
+        // divides[3] = dGPF (defensive GPF rating)
+        if (divides.length >= 2 && !isNaN(divides[1])) {
+          const gpf = divides[1];
+          const ogpf = divides[2];
+          const dgpf = divides[3];
 
           ratings[teamCode] = gpf;
           details[teamCode] = {
@@ -73,6 +78,14 @@ export default async function handler(req: any, res: any) {
             gpf,
             ogpf: !isNaN(ogpf) ? ogpf : undefined,
             dgpf: !isNaN(dgpf) ? dgpf : undefined,
+          };
+        } else if (divides.length === 1 && !isNaN(divides[0])) {
+          // Fallback if table layout ever omits LstWk
+          const gpf = divides[0];
+          ratings[teamCode] = gpf;
+          details[teamCode] = {
+            rank: rankMatch ? parseInt(rankMatch[1], 10) : 0,
+            gpf,
           };
         }
       }
