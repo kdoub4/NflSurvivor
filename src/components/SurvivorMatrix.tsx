@@ -11,12 +11,11 @@ import {
   CheckCircle2,
   Calendar,
   Zap,
-  Eye,
-  EyeOff,
   SlidersHorizontal,
   Lock,
   Unlock,
   Moon,
+  X,
 } from 'lucide-react';
 
 interface SurvivorMatrixProps {
@@ -26,6 +25,7 @@ interface SurvivorMatrixProps {
   settings?: AppSettings;
   greyOutMondayNight?: boolean;
   onToggleGreyOutMonday?: (enabled: boolean) => void;
+  onUpdatePoolEnd?: (poolEnd: number) => void;
   onCellClick: (teamId: string, week: number) => void;
   onSelectWeek: (week: number) => void;
   lockedWeeks?: Record<number, LockedWeekData>;
@@ -43,6 +43,7 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
   settings,
   greyOutMondayNight,
   onToggleGreyOutMonday,
+  onUpdatePoolEnd,
   onCellClick,
   onSelectWeek,
   lockedWeeks = {},
@@ -55,6 +56,33 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [sortWeek, setSortWeek] = useState<number>(1);
   const [isWeeksMenuOpen, setIsWeeksMenuOpen] = useState(false);
+
+  const poolEnd = settings?.poolEndWeek ?? 18;
+  const [poolEndInput, setPoolEndInput] = useState<number | string>(poolEnd);
+
+  React.useEffect(() => {
+    setPoolEndInput(poolEnd);
+  }, [poolEnd]);
+
+  const handlePoolEndChange = (valStr: string) => {
+    setPoolEndInput(valStr);
+    const num = parseInt(valStr, 10);
+    if (!isNaN(num)) {
+      const clamped = Math.max(1, Math.min(18, num));
+      onUpdatePoolEnd?.(clamped);
+    }
+  };
+
+  const handlePoolEndBlur = () => {
+    const num = parseInt(String(poolEndInput), 10);
+    if (isNaN(num) || num < 1) {
+      setPoolEndInput(poolEnd);
+    } else {
+      const clamped = Math.max(1, Math.min(18, num));
+      setPoolEndInput(clamped);
+      onUpdatePoolEnd?.(clamped);
+    }
+  };
 
   // Monday Night Football greying out state
   const [localGreyOutMonday, setLocalGreyOutMonday] = useState<boolean>(() => {
@@ -324,34 +352,45 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
           </div>
         </div>
 
-        {/* Weeks Visibility Dropdown and Controls */}
+        {/* Combined Weeks Filter, Pool End, and Controls */}
         <div className="flex items-center gap-2">
-          <div className="relative">
-            <button
-              onClick={() => setIsWeeksMenuOpen((prev) => !prev)}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer ${
-                hiddenWeeks.size > 0
-                  ? 'bg-amber-950/60 border-amber-600/80 text-amber-300 hover:bg-amber-900/60'
-                  : 'bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-800'
-              }`}
-              title="Show or hide individual week columns"
-            >
-              {hiddenWeeks.size > 0 ? (
-                <EyeOff className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-              ) : (
-                <Eye className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              )}
-              <span>Weeks</span>
-              <span
-                className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${
+          {/* Combined Weeks Filter with Inline Reset */}
+          <div className="relative flex items-center">
+            <div className="flex items-center rounded-lg bg-slate-950 border border-slate-800 p-0.5">
+              <button
+                type="button"
+                id="btn-weeks-filter"
+                onClick={() => setIsWeeksMenuOpen((prev) => !prev)}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition cursor-pointer ${
                   hiddenWeeks.size > 0
-                    ? 'bg-amber-900 text-amber-200 border border-amber-700'
-                    : 'bg-slate-800 text-slate-300'
+                    ? 'bg-amber-950/60 text-amber-300 hover:bg-amber-900/60'
+                    : 'text-slate-200 hover:bg-slate-850'
                 }`}
+                title="Filter and toggle visible week columns"
               >
-                {visibleWeeks.length}/18
-              </span>
-            </button>
+                <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>Weeks</span>
+                <span
+                  className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${
+                    hiddenWeeks.size > 0
+                      ? 'bg-amber-900 text-amber-200 border border-amber-700'
+                      : 'bg-slate-800 text-slate-300'
+                  }`}
+                >
+                  {visibleWeeks.length}/18
+                </span>
+              </button>
+              {hiddenWeeks.size > 0 && (
+                <button
+                  type="button"
+                  onClick={showAllWeeks}
+                  className="px-2 py-1.5 text-[11px] text-amber-300 hover:text-white hover:bg-slate-800 rounded-md transition cursor-pointer font-semibold border-l border-slate-800 ml-0.5"
+                  title="Unhide all week columns"
+                >
+                  Reset
+                </button>
+              )}
+            </div>
 
             {/* Weeks Visibility Popover Menu */}
             {isWeeksMenuOpen && (
@@ -396,7 +435,7 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
                     )}
                   </div>
 
-                  {/* 18-week grid toggles */}
+                  {/* Pool week grid toggles */}
                   <div className="text-[10px] uppercase font-bold text-slate-400 mb-1.5 tracking-wider">
                     Toggle Columns:
                   </div>
@@ -435,10 +474,7 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
                   </div>
 
                   {hiddenWeeks.size > 0 && (
-                    <div className="mt-3 pt-2.5 border-t border-slate-800 flex justify-between items-center text-[11px]">
-                      <span className="text-amber-400 font-medium">
-                        {hiddenWeeks.size} column{hiddenWeeks.size > 1 ? 's' : ''} hidden
-                      </span>
+                    <div className="mt-3 pt-2.5 border-t border-slate-800 flex justify-end items-center text-[11px]">
                       <button
                         onClick={showAllWeeks}
                         className="text-emerald-400 hover:text-emerald-300 font-semibold underline cursor-pointer"
@@ -452,20 +488,20 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
             )}
           </div>
 
-          {/* Quick Unhide Pill if columns are hidden */}
-          {hiddenWeeks.size > 0 && (
-            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-amber-950/70 border border-amber-700/80 text-amber-300 text-xs shrink-0">
-              <EyeOff className="w-3 h-3 text-amber-400 shrink-0" />
-              <span>{hiddenWeeks.size} hidden</span>
-              <button
-                onClick={showAllWeeks}
-                className="ml-1 text-[11px] underline hover:text-white cursor-pointer font-medium"
-                title="Unhide all columns"
-              >
-                Reset
-              </button>
-            </div>
-          )}
+          {/* Pool End Number Field */}
+          <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1.5 rounded-lg border border-slate-800 text-xs shrink-0">
+            <span className="text-slate-400 font-mono text-[11px] whitespace-nowrap">Pool End:</span>
+            <input
+              type="number"
+              min={1}
+              max={18}
+              value={poolEndInput}
+              onChange={(e) => handlePoolEndChange(e.target.value)}
+              onBlur={handlePoolEndBlur}
+              className="w-12 px-1 py-0.5 bg-slate-900 border border-slate-700 rounded text-center text-xs font-mono font-bold text-emerald-400 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+              title="Set pool end week (1 to 18) for Future Value and other calculations"
+            />
+          </div>
 
           {/* Monday Night Football Dimming Toggle */}
           <button
@@ -581,7 +617,7 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
                 className={`sticky left-20 z-40 bg-slate-900 p-2 w-16 min-w-[64px] text-center border-r border-slate-700 text-slate-200 font-bold ${
                   sortField === 'futureValue' ? 'bg-slate-850' : ''
                 }`}
-                title="Future Value: Number of remaining weeks projected as a >= 6.0 pt favorite"
+                title={`Future Value: Number of remaining weeks (W${currentWeek}-W${poolEnd}) projected as a >= 6.0 pt favorite`}
               >
                 <button
                   onClick={() => handleSort('futureValue')}
@@ -679,7 +715,7 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
                             title={`Hide Week ${week} column`}
                             className="opacity-0 group-hover:opacity-100 hover:opacity-100 p-0.5 rounded text-slate-400 hover:text-rose-300 hover:bg-slate-800 transition absolute -right-1 cursor-pointer"
                           >
-                            <EyeOff className="w-3 h-3" />
+                            <X className="w-3 h-3" />
                           </button>
                         )}
                       </div>

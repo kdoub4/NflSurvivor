@@ -13,6 +13,7 @@ import {
   AlertCircle,
   Shield,
   Moon,
+  Flag,
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -142,6 +143,38 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onClick={() => onUpdateSettings({ ...settings, currentWeek: w })}
                   className={`w-7 h-7 text-xs font-mono font-bold rounded cursor-pointer transition ${
                     settings.currentWeek === w
+                      ? 'bg-emerald-600 text-white shadow-xs'
+                      : 'bg-slate-800 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {w}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Pool End Week */}
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                <Flag className="w-4 h-4 text-emerald-400" />
+                <span>Pool End Week</span>
+              </label>
+              <span className="font-mono text-xs text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">
+                Week {settings.poolEndWeek ?? 18}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Sets the final week of your survivor pool. Future Value and survivor calculations only evaluate matchups up to this week.
+            </p>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {Array.from({ length: 18 }, (_, i) => i + 1).map((w) => (
+                <button
+                  key={`settings-pool-end-${w}`}
+                  type="button"
+                  onClick={() => onUpdateSettings({ ...settings, poolEndWeek: w })}
+                  className={`w-7 h-7 text-xs font-mono font-bold rounded cursor-pointer transition ${
+                    (settings.poolEndWeek ?? 18) === w
                       ? 'bg-emerald-600 text-white shadow-xs'
                       : 'bg-slate-800 text-slate-400 hover:text-white'
                   }`}

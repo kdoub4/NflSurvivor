@@ -40,6 +40,7 @@ export interface AppSettings {
   blendRatio: number; // 0 (100% User) to 1 (100% Market), default 0.5
   globalHfa: number; // default 1.5
   currentWeek: number; // 1 to 18
+  poolEndWeek?: number; // 1 to 18, default: 18 (pool end week for future value and other calculations)
   doublePickWeeks?: number[]; // e.g., [12, 16]
   thanksgivingWeek?: number; // default: 12
   christmasWeek?: number; // default: 16

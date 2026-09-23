@@ -107,7 +107,8 @@ export default function App() {
                   activeSettings.blendRatio,
                   activeSettings.globalHfa,
                   activeSettings.currentWeek,
-                  {}
+                  {},
+                  activeSettings.poolEndWeek ?? 18
                 );
                 baseStats.forEach((ts) => {
                   const m = ts.matchupsByWeek[lw.week];
@@ -206,7 +207,8 @@ export default function App() {
       settings.blendRatio,
       settings.globalHfa,
       settings.currentWeek,
-      lockedWeeks
+      lockedWeeks,
+      settings.poolEndWeek ?? 18
     );
   }, [ratings, schedule, picks, settings, lockedWeeks]);
 
@@ -378,6 +380,16 @@ export default function App() {
     [settings]
   );
 
+  const handleUpdatePoolEnd = useCallback(
+    async (poolEnd: number) => {
+      const clamped = Math.max(1, Math.min(18, poolEnd));
+      const updated = { ...settings, poolEndWeek: clamped };
+      setSettings(updated);
+      await StorageService.saveSettings(updated);
+    },
+    [settings]
+  );
+
   const handleDataImported = useCallback(
     (data: {
       ratings: TeamRating[];
@@ -440,6 +452,7 @@ export default function App() {
             settings={settings}
             greyOutMondayNight={Boolean(settings.greyOutMondayNight)}
             onToggleGreyOutMonday={handleToggleGreyOutMonday}
+            onUpdatePoolEnd={handleUpdatePoolEnd}
             onCellClick={handleCellClick}
             onSelectWeek={handleSelectWeek}
             lockedWeeks={lockedWeeks}

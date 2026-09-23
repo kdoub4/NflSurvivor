@@ -71,6 +71,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   blendRatio: 0.5, // 50% User / 50% Market
   globalHfa: 1.5,
   currentWeek: 1,
+  poolEndWeek: 18,
   doublePickWeeks: DEFAULT_DOUBLE_PICK_WEEKS,
   thanksgivingWeek: DEFAULT_THANKSGIVING_WEEK,
   christmasWeek: DEFAULT_CHRISTMAS_WEEK,
@@ -330,9 +331,11 @@ export const StorageService = {
             blendRatio: stored.blendRatio ?? DEFAULT_SETTINGS.blendRatio,
             globalHfa: stored.globalHfa ?? DEFAULT_SETTINGS.globalHfa,
             currentWeek: stored.currentWeek ?? DEFAULT_SETTINGS.currentWeek,
+            poolEndWeek: stored.poolEndWeek ?? DEFAULT_SETTINGS.poolEndWeek,
             doublePickWeeks: stored.doublePickWeeks ?? DEFAULT_SETTINGS.doublePickWeeks,
             thanksgivingWeek: stored.thanksgivingWeek ?? DEFAULT_SETTINGS.thanksgivingWeek,
             christmasWeek: stored.christmasWeek ?? DEFAULT_SETTINGS.christmasWeek,
+            greyOutMondayNight: stored.greyOutMondayNight ?? DEFAULT_SETTINGS.greyOutMondayNight,
           };
         }
       } catch {
@@ -346,9 +349,11 @@ export const StorageService = {
         return {
           ...DEFAULT_SETTINGS,
           ...parsed,
+          poolEndWeek: parsed.poolEndWeek ?? DEFAULT_SETTINGS.poolEndWeek,
           doublePickWeeks: parsed.doublePickWeeks ?? DEFAULT_SETTINGS.doublePickWeeks,
           thanksgivingWeek: parsed.thanksgivingWeek ?? DEFAULT_SETTINGS.thanksgivingWeek,
           christmasWeek: parsed.christmasWeek ?? DEFAULT_SETTINGS.christmasWeek,
+          greyOutMondayNight: parsed.greyOutMondayNight ?? DEFAULT_SETTINGS.greyOutMondayNight,
         };
       } catch {
         // ignore

@@ -96,7 +96,8 @@ export function buildTeamsWithStats(
   blendRatio: number,
   globalHfa: number,
   currentWeek: number,
-  lockedWeeks: Record<number, LockedWeekData> = {}
+  lockedWeeks: Record<number, LockedWeekData> = {},
+  poolEnd: number = 18
 ): TeamWithStats[] {
   // Map ratings by teamId
   const ratingMap = new Map<string, TeamRating>();
@@ -204,8 +205,9 @@ export function buildTeamsWithStats(
         closingOdds,
       };
 
-      // Future Value: Count remaining weeks (week >= currentWeek) where team is projected as >= 6.0 pt favorite (spread <= -6.0)
-      if (w >= currentWeek && effectiveSpread <= -6.0) {
+      // Future Value: Count remaining weeks within pool (w >= currentWeek && w <= poolEnd) where team is projected as >= 6.0 pt favorite (spread <= -6.0)
+      const effectivePoolEnd = Math.max(1, Math.min(18, poolEnd || 18));
+      if (w >= currentWeek && w <= effectivePoolEnd && effectiveSpread <= -6.0) {
         futureValueCount++;
       }
     }
