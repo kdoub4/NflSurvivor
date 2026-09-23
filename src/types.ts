@@ -26,6 +26,7 @@ export interface ScheduledGame {
   isNeutral?: boolean; // International / neutral site game (0 home field advantage)
   neutralLocation?: string; // e.g., 'Melbourne, Australia'
   venue?: string; // e.g., 'Melbourne Cricket Ground'
+  isMondayNight?: boolean; // Monday Night Football game
 }
 
 export interface SurvivorPick {
@@ -42,6 +43,7 @@ export interface AppSettings {
   doublePickWeeks?: number[]; // e.g., [12, 16]
   thanksgivingWeek?: number; // default: 12
   christmasWeek?: number; // default: 16
+  greyOutMondayNight?: boolean; // toggle to grey out Monday night games
 }
 
 export interface LockedWeekData {
@@ -62,6 +64,7 @@ export interface CalculatedMatchup {
   isNeutral?: boolean;
   neutralLocation?: string;
   venue?: string;
+  isMondayNight?: boolean;
   projectedSpread: number; // From team's perspective. Negative means team is favored (e.g. -6.5). Positive means underdog (+3.0)
   spreadText: string; // e.g. "vs DEN -6.5" or "@ LV +3.0"
   opponentSpreadText: string;

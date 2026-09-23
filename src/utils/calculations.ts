@@ -1,5 +1,6 @@
 import { NFLTeam, TeamRating, ScheduledGame, CalculatedMatchup, TeamWithStats, SurvivorPick, LockedWeekData } from '../types';
 import { TEAM_MAP } from '../data/teams';
+import { isMondayNightGame } from '../data/schedule';
 
 /**
  * Calculates effective blended rating for a team:
@@ -181,6 +182,7 @@ export function buildTeamsWithStats(
       const oppSpreadStr = formatSpreadValue(oppSpread);
 
       const heatTier = getHeatmapTier(effectiveSpread, false);
+      const isMonday = isMondayNightGame(game);
 
       matchupsByWeek[w] = {
         gameId: game.gameId,
@@ -192,6 +194,7 @@ export function buildTeamsWithStats(
         isNeutral,
         neutralLocation,
         venue,
+        isMondayNight: isMonday,
         projectedSpread: effectiveSpread,
         spreadText: `${locationPrefix} ${opponentId} ${spreadStr}`,
         opponentSpreadText: `${oppLocationPrefix} ${team.id} ${oppSpreadStr}`,

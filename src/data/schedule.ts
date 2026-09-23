@@ -12,7 +12,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w1-buf-hou', week: 1, homeTeam: 'HOU', awayTeam: 'BUF' },
   { gameId: '2026-w1-bal-ind', week: 1, homeTeam: 'IND', awayTeam: 'BAL' },
   { gameId: '2026-w1-cle-jax', week: 1, homeTeam: 'JAX', awayTeam: 'CLE' },
-  { gameId: '2026-w1-den-kc', week: 1, homeTeam: 'KC', awayTeam: 'DEN' },
+  { gameId: '2026-w1-den-kc', week: 1, homeTeam: 'KC', awayTeam: 'DEN', isMondayNight: true },
   { gameId: '2026-w1-ari-lac', week: 1, homeTeam: 'LAC', awayTeam: 'ARI' },
   { gameId: '2026-w1-sf-lar', week: 1, homeTeam: 'LAR', awayTeam: 'SF', isNeutral: true, neutralLocation: 'Melbourne, Australia', venue: 'Melbourne Cricket Ground' },
   { gameId: '2026-w1-mia-lv', week: 1, homeTeam: 'LV', awayTeam: 'MIA' },
@@ -34,7 +34,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w2-cin-hou', week: 2, homeTeam: 'HOU', awayTeam: 'CIN' },
   { gameId: '2026-w2-ind-kc', week: 2, homeTeam: 'KC', awayTeam: 'IND' },
   { gameId: '2026-w2-lv-lac', week: 2, homeTeam: 'LAC', awayTeam: 'LV' },
-  { gameId: '2026-w2-nyg-lar', week: 2, homeTeam: 'LAR', awayTeam: 'NYG' },
+  { gameId: '2026-w2-nyg-lar', week: 2, homeTeam: 'LAR', awayTeam: 'NYG', isMondayNight: true },
   { gameId: '2026-w2-pit-ne', week: 2, homeTeam: 'NE', awayTeam: 'PIT' },
   { gameId: '2026-w2-gb-nyj', week: 2, homeTeam: 'NYJ', awayTeam: 'GB' },
   { gameId: '2026-w2-mia-sf', week: 2, homeTeam: 'SF', awayTeam: 'MIA' },
@@ -44,7 +44,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   // === WEEK 3 ===
   { gameId: '2026-w3-dal-bal', week: 3, homeTeam: 'BAL', awayTeam: 'DAL', isNeutral: true, neutralLocation: 'Rio de Janeiro, Brazil', venue: 'Maracanã Stadium' },
   { gameId: '2026-w3-lac-buf', week: 3, homeTeam: 'BUF', awayTeam: 'LAC' },
-  { gameId: '2026-w3-phi-chi', week: 3, homeTeam: 'CHI', awayTeam: 'PHI' },
+  { gameId: '2026-w3-phi-chi', week: 3, homeTeam: 'CHI', awayTeam: 'PHI', isMondayNight: true },
   { gameId: '2026-w3-car-cle', week: 3, homeTeam: 'CLE', awayTeam: 'CAR' },
   { gameId: '2026-w3-lar-den', week: 3, homeTeam: 'DEN', awayTeam: 'LAR' },
   { gameId: '2026-w3-nyj-det', week: 3, homeTeam: 'DET', awayTeam: 'NYJ' },
@@ -69,7 +69,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w4-dal-hou', week: 4, homeTeam: 'HOU', awayTeam: 'DAL' },
   { gameId: '2026-w4-kc-lv', week: 4, homeTeam: 'LV', awayTeam: 'KC' },
   { gameId: '2026-w4-mia-min', week: 4, homeTeam: 'MIN', awayTeam: 'MIA' },
-  { gameId: '2026-w4-atl-no', week: 4, homeTeam: 'NO', awayTeam: 'ATL' },
+  { gameId: '2026-w4-atl-no', week: 4, homeTeam: 'NO', awayTeam: 'ATL', isMondayNight: true },
   { gameId: '2026-w4-ari-nyg', week: 4, homeTeam: 'NYG', awayTeam: 'ARI' },
   { gameId: '2026-w4-lar-phi', week: 4, homeTeam: 'PHI', awayTeam: 'LAR' },
   { gameId: '2026-w4-lac-sea', week: 4, homeTeam: 'SEA', awayTeam: 'LAC' },
@@ -84,7 +84,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w5-chi-gb', week: 5, homeTeam: 'GB', awayTeam: 'CHI' },
   { gameId: '2026-w5-phi-jax', week: 5, homeTeam: 'JAX', awayTeam: 'PHI', isNeutral: true, neutralLocation: 'London, UK', venue: 'Tottenham Hotspur Stadium' },
   { gameId: '2026-w5-den-lac', week: 5, homeTeam: 'LAC', awayTeam: 'DEN' },
-  { gameId: '2026-w5-buf-lar', week: 5, homeTeam: 'LAR', awayTeam: 'BUF' },
+  { gameId: '2026-w5-buf-lar', week: 5, homeTeam: 'LAR', awayTeam: 'BUF', isMondayNight: true },
   { gameId: '2026-w5-cin-mia', week: 5, homeTeam: 'MIA', awayTeam: 'CIN' },
   { gameId: '2026-w5-lv-ne', week: 5, homeTeam: 'NE', awayTeam: 'LV' },
   { gameId: '2026-w5-min-no', week: 5, homeTeam: 'NO', awayTeam: 'MIN' },
@@ -107,7 +107,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w6-nyj-ne', week: 6, homeTeam: 'NE', awayTeam: 'NYJ' },
   { gameId: '2026-w6-no-nyg', week: 6, homeTeam: 'NYG', awayTeam: 'NO' },
   { gameId: '2026-w6-car-phi', week: 6, homeTeam: 'PHI', awayTeam: 'CAR' },
-  { gameId: '2026-w6-was-sf', week: 6, homeTeam: 'SF', awayTeam: 'WAS' },
+  { gameId: '2026-w6-was-sf', week: 6, homeTeam: 'SF', awayTeam: 'WAS', isMondayNight: true },
   { gameId: '2026-w6-pit-tb', week: 6, homeTeam: 'TB', awayTeam: 'PIT' },
 
   // === WEEK 7 ===
@@ -121,7 +121,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w7-lar-lv', week: 7, homeTeam: 'LV', awayTeam: 'LAR' },
   { gameId: '2026-w7-ind-min', week: 7, homeTeam: 'MIN', awayTeam: 'IND' },
   { gameId: '2026-w7-mia-nyj', week: 7, homeTeam: 'NYJ', awayTeam: 'MIA' },
-  { gameId: '2026-w7-dal-phi', week: 7, homeTeam: 'PHI', awayTeam: 'DAL' },
+  { gameId: '2026-w7-dal-phi', week: 7, homeTeam: 'PHI', awayTeam: 'DAL', isMondayNight: true },
   { gameId: '2026-w7-no-pit', week: 7, homeTeam: 'PIT', awayTeam: 'NO', isNeutral: true, neutralLocation: 'Paris, France', venue: 'Stade de France' },
   { gameId: '2026-w7-kc-sea', week: 7, homeTeam: 'SEA', awayTeam: 'KC' },
   { gameId: '2026-w7-cle-ten', week: 7, homeTeam: 'TEN', awayTeam: 'CLE' },
@@ -138,7 +138,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w8-ne-mia', week: 8, homeTeam: 'MIA', awayTeam: 'NE' },
   { gameId: '2026-w8-lv-nyj', week: 8, homeTeam: 'NYJ', awayTeam: 'LV' },
   { gameId: '2026-w8-cle-pit', week: 8, homeTeam: 'PIT', awayTeam: 'CLE' },
-  { gameId: '2026-w8-chi-sea', week: 8, homeTeam: 'SEA', awayTeam: 'CHI' },
+  { gameId: '2026-w8-chi-sea', week: 8, homeTeam: 'SEA', awayTeam: 'CHI', isMondayNight: true },
   { gameId: '2026-w8-atl-tb', week: 8, homeTeam: 'TB', awayTeam: 'ATL' },
   { gameId: '2026-w8-phi-was', week: 8, homeTeam: 'WAS', awayTeam: 'PHI' },
 
@@ -151,7 +151,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w9-nyj-kc', week: 9, homeTeam: 'KC', awayTeam: 'NYJ' },
   { gameId: '2026-w9-hou-lac', week: 9, homeTeam: 'LAC', awayTeam: 'HOU' },
   { gameId: '2026-w9-det-mia', week: 9, homeTeam: 'MIA', awayTeam: 'DET' },
-  { gameId: '2026-w9-buf-min', week: 9, homeTeam: 'MIN', awayTeam: 'BUF' },
+  { gameId: '2026-w9-buf-min', week: 9, homeTeam: 'MIN', awayTeam: 'BUF', isMondayNight: true },
   { gameId: '2026-w9-gb-ne', week: 9, homeTeam: 'NE', awayTeam: 'GB' },
   { gameId: '2026-w9-cle-no', week: 9, homeTeam: 'NO', awayTeam: 'CLE' },
   { gameId: '2026-w9-nyg-phi', week: 9, homeTeam: 'PHI', awayTeam: 'NYG' },
@@ -162,7 +162,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   // === WEEK 10 ===
   { gameId: '2026-w10-lar-ari', week: 10, homeTeam: 'ARI', awayTeam: 'LAR' },
   { gameId: '2026-w10-kc-atl', week: 10, homeTeam: 'ATL', awayTeam: 'KC' },
-  { gameId: '2026-w10-lac-bal', week: 10, homeTeam: 'BAL', awayTeam: 'LAC' },
+  { gameId: '2026-w10-lac-bal', week: 10, homeTeam: 'BAL', awayTeam: 'LAC', isMondayNight: true },
   { gameId: '2026-w10-pit-cin', week: 10, homeTeam: 'CIN', awayTeam: 'PIT' },
   { gameId: '2026-w10-hou-cle', week: 10, homeTeam: 'CLE', awayTeam: 'HOU' },
   { gameId: '2026-w10-sf-dal', week: 10, homeTeam: 'DAL', awayTeam: 'SF' },
@@ -188,7 +188,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w11-jax-nyg', week: 11, homeTeam: 'NYG', awayTeam: 'JAX' },
   { gameId: '2026-w11-pit-phi', week: 11, homeTeam: 'PHI', awayTeam: 'PIT' },
   { gameId: '2026-w11-min-sf', week: 11, homeTeam: 'SF', awayTeam: 'MIN', isNeutral: true, neutralLocation: 'Mexico City, Mexico', venue: 'Estadio Banorte' },
-  { gameId: '2026-w11-cin-was', week: 11, homeTeam: 'WAS', awayTeam: 'CIN' },
+  { gameId: '2026-w11-cin-was', week: 11, homeTeam: 'WAS', awayTeam: 'CIN', isMondayNight: true },
 
   // === WEEK 12 ===
   { gameId: '2026-w12-was-ari', week: 12, homeTeam: 'ARI', awayTeam: 'WAS' },
@@ -206,7 +206,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w12-atl-min', week: 12, homeTeam: 'MIN', awayTeam: 'ATL' },
   { gameId: '2026-w12-den-pit', week: 12, homeTeam: 'PIT', awayTeam: 'DEN' },
   { gameId: '2026-w12-sea-sf', week: 12, homeTeam: 'SF', awayTeam: 'SEA' },
-  { gameId: '2026-w12-car-tb', week: 12, homeTeam: 'TB', awayTeam: 'CAR' },
+  { gameId: '2026-w12-car-tb', week: 12, homeTeam: 'TB', awayTeam: 'CAR', isMondayNight: true },
 
   // === WEEK 13 ===
   { gameId: '2026-w13-phi-ari', week: 13, homeTeam: 'ARI', awayTeam: 'PHI' },
@@ -220,7 +220,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w13-gb-no', week: 13, homeTeam: 'NO', awayTeam: 'GB' },
   { gameId: '2026-w13-sf-nyg', week: 13, homeTeam: 'NYG', awayTeam: 'SF' },
   { gameId: '2026-w13-hou-pit', week: 13, homeTeam: 'PIT', awayTeam: 'HOU' },
-  { gameId: '2026-w13-dal-sea', week: 13, homeTeam: 'SEA', awayTeam: 'DAL' },
+  { gameId: '2026-w13-dal-sea', week: 13, homeTeam: 'SEA', awayTeam: 'DAL', isMondayNight: true },
   { gameId: '2026-w13-lac-tb', week: 13, homeTeam: 'TB', awayTeam: 'LAC' },
   { gameId: '2026-w13-was-ten', week: 13, homeTeam: 'TEN', awayTeam: 'WAS' },
 
@@ -231,7 +231,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w14-atl-cle', week: 14, homeTeam: 'CLE', awayTeam: 'ATL' },
   { gameId: '2026-w14-ten-det', week: 14, homeTeam: 'DET', awayTeam: 'TEN' },
   { gameId: '2026-w14-buf-gb', week: 14, homeTeam: 'GB', awayTeam: 'BUF' },
-  { gameId: '2026-w14-pit-jax', week: 14, homeTeam: 'JAX', awayTeam: 'PIT' },
+  { gameId: '2026-w14-pit-jax', week: 14, homeTeam: 'JAX', awayTeam: 'PIT', isMondayNight: true },
   { gameId: '2026-w14-lac-lv', week: 14, homeTeam: 'LV', awayTeam: 'LAC' },
   { gameId: '2026-w14-chi-mia', week: 14, homeTeam: 'MIA', awayTeam: 'CHI' },
   { gameId: '2026-w14-min-ne', week: 14, homeTeam: 'NE', awayTeam: 'MIN' },
@@ -247,7 +247,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w15-cin-car', week: 15, homeTeam: 'CAR', awayTeam: 'CIN' },
   { gameId: '2026-w15-mia-gb', week: 15, homeTeam: 'GB', awayTeam: 'MIA' },
   { gameId: '2026-w15-jax-hou', week: 15, homeTeam: 'HOU', awayTeam: 'JAX' },
-  { gameId: '2026-w15-ne-kc', week: 15, homeTeam: 'KC', awayTeam: 'NE' },
+  { gameId: '2026-w15-ne-kc', week: 15, homeTeam: 'KC', awayTeam: 'NE', isMondayNight: true },
   { gameId: '2026-w15-sf-lac', week: 15, homeTeam: 'LAC', awayTeam: 'SF' },
   { gameId: '2026-w15-dal-lar', week: 15, homeTeam: 'LAR', awayTeam: 'DAL' },
   { gameId: '2026-w15-den-lv', week: 15, homeTeam: 'LV', awayTeam: 'DEN' },
@@ -265,7 +265,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w16-gb-chi', week: 16, homeTeam: 'CHI', awayTeam: 'GB' },
   { gameId: '2026-w16-jax-dal', week: 16, homeTeam: 'DAL', awayTeam: 'JAX' },
   { gameId: '2026-w16-buf-den', week: 16, homeTeam: 'DEN', awayTeam: 'BUF' },
-  { gameId: '2026-w16-nyg-det', week: 16, homeTeam: 'DET', awayTeam: 'NYG' },
+  { gameId: '2026-w16-nyg-det', week: 16, homeTeam: 'DET', awayTeam: 'NYG', isMondayNight: true },
   { gameId: '2026-w16-cin-ind', week: 16, homeTeam: 'IND', awayTeam: 'CIN' },
   { gameId: '2026-w16-sf-kc', week: 16, homeTeam: 'KC', awayTeam: 'SF' },
   { gameId: '2026-w16-ten-lv', week: 16, homeTeam: 'LV', awayTeam: 'TEN' },
@@ -285,7 +285,7 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w17-bal-cin', week: 17, homeTeam: 'CIN', awayTeam: 'BAL' },
   { gameId: '2026-w17-ind-cle', week: 17, homeTeam: 'CLE', awayTeam: 'IND' },
   { gameId: '2026-w17-nyg-dal', week: 17, homeTeam: 'DAL', awayTeam: 'NYG' },
-  { gameId: '2026-w17-hou-gb', week: 17, homeTeam: 'GB', awayTeam: 'HOU' },
+  { gameId: '2026-w17-hou-gb', week: 17, homeTeam: 'GB', awayTeam: 'HOU', isMondayNight: true },
   { gameId: '2026-w17-was-jax', week: 17, homeTeam: 'JAX', awayTeam: 'WAS' },
   { gameId: '2026-w17-kc-lac', week: 17, homeTeam: 'LAC', awayTeam: 'KC' },
   { gameId: '2026-w17-buf-mia', week: 17, homeTeam: 'MIA', awayTeam: 'BUF' },
@@ -314,3 +314,36 @@ export const INITIAL_SCHEDULE: ScheduledGame[] = [
   { gameId: '2026-w18-dal-was', week: 18, homeTeam: 'WAS', awayTeam: 'DAL' },
 
 ];
+
+/**
+ * Verified list of Monday Night Football game IDs across the 2026 NFL season.
+ */
+export const MONDAY_NIGHT_GAME_IDS = new Set<string>([
+  '2026-w1-den-kc',
+  '2026-w2-nyg-lar',
+  '2026-w3-phi-chi',
+  '2026-w4-atl-no',
+  '2026-w5-buf-lar',
+  '2026-w6-was-sf',
+  '2026-w7-dal-phi',
+  '2026-w8-chi-sea',
+  '2026-w9-buf-min',
+  '2026-w10-lac-bal',
+  '2026-w11-cin-was',
+  '2026-w12-car-tb',
+  '2026-w13-dal-sea',
+  '2026-w14-pit-jax',
+  '2026-w15-ne-kc',
+  '2026-w16-nyg-det',
+  '2026-w17-hou-gb',
+]);
+
+/**
+ * Helper to determine if a scheduled game or matchup is Monday Night Football.
+ */
+export function isMondayNightGame(game?: { gameId?: string; isMondayNight?: boolean } | null): boolean {
+  if (!game) return false;
+  if (game.isMondayNight) return true;
+  if (game.gameId && MONDAY_NIGHT_GAME_IDS.has(game.gameId)) return true;
+  return false;
+}

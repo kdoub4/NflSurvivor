@@ -1,6 +1,6 @@
 import React from 'react';
 import { CalculatedMatchup } from '../types';
-import { ShieldCheck, Lock, Globe } from 'lucide-react';
+import { ShieldCheck, Lock, Globe, Moon } from 'lucide-react';
 
 interface MatrixCellProps {
   matchup: CalculatedMatchup;
@@ -11,6 +11,7 @@ interface MatrixCellProps {
   isTeamUsedInFutureWeek: boolean; // Picked in a week after this cell's week
   usedWeekNumber?: number;
   isCurrentWeek: boolean;
+  greyOutMondayNight?: boolean;
   onCellClick: (teamId: string, week: number) => void;
 }
 
@@ -23,10 +24,13 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
   isTeamUsedInFutureWeek,
   usedWeekNumber,
   isCurrentWeek,
+  greyOutMondayNight = false,
   onCellClick,
 }) => {
   // If this team is picked in any week, all other weeks in its row are locked out & greyed out
   const isLockedOut = Boolean(usedWeekNumber !== undefined && !isPickedThisWeek);
+  const isMondayNight = Boolean(matchup.isMondayNight);
+  const isGreyedOutMonday = Boolean(greyOutMondayNight && isMondayNight && !isPickedThisWeek && !isLockedOut);
 
   if (matchup.isBye) {
     return (
@@ -65,9 +69,13 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
   const cellTitle = isLockedOut
     ? `${teamId} already selected as your Survivor Pick in Week ${usedWeekNumber}`
     : matchup.isWeekLocked
-    ? `${teamId} vs ${matchup.opponentId}\n🔒 Week ${matchup.week} (LOCKED & CLOSED)\nSaved Spread: ${matchup.projectedSpread > 0 ? '+' : ''}${matchup.projectedSpread.toFixed(1)}\nFox Sports Closing Odds: ${matchup.closingOdds || 'N/A'}${matchup.isNeutral ? `\n🌐 International Game: ${matchup.neutralLocation || ''}` : ''}`
+    ? `${teamId} vs ${matchup.opponentId}\n🔒 Week ${matchup.week} (LOCKED & CLOSED)\nSaved Spread: ${matchup.projectedSpread > 0 ? '+' : ''}${matchup.projectedSpread.toFixed(1)}\nFox Sports Closing Odds: ${matchup.closingOdds || 'N/A'}${matchup.isNeutral ? `\n🌐 International Game: ${matchup.neutralLocation || ''}` : ''}${isMondayNight ? '\n🌙 Monday Night Football' : ''}`
     : isPickedThisWeek
-    ? `Current Pick for Week ${matchup.week}${pickSlot ? ` (Pick ${pickSlot})` : ''}. Click to deselect.`
+    ? `Current Pick for Week ${matchup.week}${pickSlot ? ` (Pick ${pickSlot})` : ''}${isMondayNight ? ' (Monday Night Football)' : ''}. Click to deselect.`
+    : isGreyedOutMonday
+    ? `${teamId} vs ${matchup.opponentId} (${matchup.spreadText})\n🌙 Monday Night Football (8:15 PM ET)\n[Greyed out by MNF filter]\nClick to select as Week ${matchup.week} Pick.`
+    : isMondayNight
+    ? `${teamId} vs ${matchup.opponentId} (${matchup.spreadText})\n🌙 Monday Night Football (8:15 PM ET)\nClick to set as Week ${matchup.week} Pick.`
     : matchup.isNeutral
     ? `${teamId} vs ${matchup.opponentId} (${matchup.spreadText})\n🌐 International / Neutral Site Game\nLocation: ${matchup.neutralLocation || 'Neutral Venue'}${matchup.venue ? ` (${matchup.venue})` : ''}\nNo Home Field Advantage included in spread calculation.\nClick to set as Week ${matchup.week} Pick.`
     : `Click to set ${teamId} (${matchup.spreadText}) as Week ${matchup.week} Survivor Pick`;
@@ -89,6 +97,8 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
             ? 'ring-2 ring-amber-400 bg-amber-950/70 border-amber-400 text-amber-100 shadow-md shadow-amber-950/50 scale-[1.03] z-10'
             : isLockedOut
             ? 'opacity-25 bg-slate-900/90 border-slate-800 text-slate-600 cursor-not-allowed filter grayscale'
+            : isGreyedOutMonday
+            ? 'opacity-30 bg-slate-900/90 border-slate-800/80 text-slate-500 filter grayscale contrast-75 hover:opacity-85 hover:grayscale-0 hover:border-slate-600'
             : getHeatmapClass()
         }`}
       >
@@ -109,6 +119,8 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
             className={`font-mono text-xs font-semibold tracking-tight flex items-center gap-1 ${
               isPickedThisWeek
                 ? 'text-amber-200'
+                : isGreyedOutMonday
+                ? 'text-slate-400'
                 : matchup.isNeutral
                 ? 'text-sky-200'
                 : matchup.isHome
@@ -124,6 +136,15 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
             <span className="flex items-center gap-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 px-1 py-0.5 rounded">
               <ShieldCheck className="w-2.5 h-2.5" />
               {pickSlot ? `PICK ${pickSlot}` : 'PICK'}
+              {isMondayNight && (
+                <span className="ml-0.5 text-[7.5px] font-mono text-amber-200 bg-amber-950/90 px-0.5 py-0.2 rounded border border-amber-600/50">
+                  MNF
+                </span>
+              )}
+            </span>
+          ) : isGreyedOutMonday ? (
+            <span className="inline-flex items-center gap-0.5 text-[8px] font-mono font-medium text-slate-500">
+              <Moon className="w-2 h-2 text-slate-500" />
             </span>
           ) : matchup.heatTier === 'heavy-favorite' && !isLockedOut ? (
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-xs shadow-emerald-400" />
@@ -136,6 +157,8 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
             className={`font-mono text-xs font-black tracking-tight ${
               isPickedThisWeek
                 ? 'text-amber-300'
+                : isGreyedOutMonday
+                ? 'text-slate-500'
                 : matchup.projectedSpread <= -7.0
                 ? 'text-emerald-300'
                 : matchup.projectedSpread <= -3.5
@@ -152,7 +175,7 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
               : matchup.projectedSpread.toFixed(1)}
           </span>
 
-          {/* Location indicator / International badge OR Fox Sports Closing Odds when Week is Locked */}
+          {/* Location indicator / International badge / Monday Night badge OR Fox Sports Closing Odds when Week is Locked */}
           {matchup.isWeekLocked ? (
             <span
               className="inline-flex items-center gap-0.5 px-1 py-0.2 rounded text-[8.5px] font-mono font-bold tracking-tight bg-amber-950/95 text-amber-300 border border-amber-600/80 shadow-xs"
@@ -160,6 +183,18 @@ export const MatrixCell: React.FC<MatrixCellProps> = ({
             >
               <span className="text-[7.5px] text-amber-400/80 font-normal">CL</span>
               <span>{matchup.closingOdds || 'N/A'}</span>
+            </span>
+          ) : isMondayNight ? (
+            <span
+              className={`inline-flex items-center gap-0.5 px-1 py-0.2 rounded text-[8px] font-mono font-bold tracking-tight ${
+                isGreyedOutMonday
+                  ? 'bg-slate-850 text-slate-400 border border-slate-700'
+                  : 'bg-indigo-950/90 text-indigo-300 border border-indigo-700/70 shadow-xs'
+              }`}
+              title="Monday Night Football (8:15 PM ET)"
+            >
+              <Moon className={`w-2 h-2 ${isGreyedOutMonday ? 'text-slate-400' : 'text-indigo-400'}`} />
+              MNF
             </span>
           ) : matchup.isNeutral ? (
             <span

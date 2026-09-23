@@ -65,7 +65,18 @@ export default function App() {
           setRatings(loadedRatings);
         }
         if (loadedSchedule && loadedSchedule.length > 0) {
-          setSchedule(loadedSchedule);
+          const initMap = new Map(INITIAL_SCHEDULE.map((g) => [g.gameId, g]));
+          const merged = loadedSchedule.map((g) => {
+            const init = initMap.get(g.gameId);
+            return {
+              ...g,
+              isMondayNight: init?.isMondayNight ?? g.isMondayNight,
+              isNeutral: init?.isNeutral ?? g.isNeutral,
+              neutralLocation: init?.neutralLocation ?? g.neutralLocation,
+              venue: init?.venue ?? g.venue,
+            };
+          });
+          setSchedule(merged);
         }
         if (loadedPicks) {
           setPicks(loadedPicks);
@@ -358,6 +369,15 @@ export default function App() {
     [settings]
   );
 
+  const handleToggleGreyOutMonday = useCallback(
+    async (enabled: boolean) => {
+      const updated = { ...settings, greyOutMondayNight: enabled };
+      setSettings(updated);
+      await StorageService.saveSettings(updated);
+    },
+    [settings]
+  );
+
   const handleDataImported = useCallback(
     (data: {
       ratings: TeamRating[];
@@ -418,6 +438,8 @@ export default function App() {
             picks={picks}
             currentWeek={settings.currentWeek}
             settings={settings}
+            greyOutMondayNight={Boolean(settings.greyOutMondayNight)}
+            onToggleGreyOutMonday={handleToggleGreyOutMonday}
             onCellClick={handleCellClick}
             onSelectWeek={handleSelectWeek}
             lockedWeeks={lockedWeeks}

@@ -17,6 +17,7 @@ import {
   Globe,
   Lock,
   Unlock,
+  Moon,
 } from 'lucide-react';
 
 interface SurvivorMatrixProps {
@@ -24,6 +25,8 @@ interface SurvivorMatrixProps {
   picks: SurvivorPick[];
   currentWeek: number;
   settings?: AppSettings;
+  greyOutMondayNight?: boolean;
+  onToggleGreyOutMonday?: (enabled: boolean) => void;
   onCellClick: (teamId: string, week: number) => void;
   onSelectWeek: (week: number) => void;
   lockedWeeks?: Record<number, LockedWeekData>;
@@ -39,6 +42,8 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
   picks,
   currentWeek,
   settings,
+  greyOutMondayNight,
+  onToggleGreyOutMonday,
   onCellClick,
   onSelectWeek,
   lockedWeeks = {},
@@ -51,6 +56,27 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [sortWeek, setSortWeek] = useState<number>(1);
   const [isWeeksMenuOpen, setIsWeeksMenuOpen] = useState(false);
+
+  // Monday Night Football greying out state
+  const [localGreyOutMonday, setLocalGreyOutMonday] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('survivor_grey_out_mnf');
+      if (saved !== null) return JSON.parse(saved);
+    } catch {}
+    return Boolean(settings?.greyOutMondayNight);
+  });
+
+  const isGreyOutMondayNight = greyOutMondayNight !== undefined ? greyOutMondayNight : localGreyOutMonday;
+
+  const handleToggleGreyOutMonday = (newValue: boolean) => {
+    setLocalGreyOutMonday(newValue);
+    try {
+      localStorage.setItem('survivor_grey_out_mnf', JSON.stringify(newValue));
+    } catch {}
+    if (onToggleGreyOutMonday) {
+      onToggleGreyOutMonday(newValue);
+    }
+  };
 
   // Hidden week columns state (persisted to localStorage)
   const [hiddenWeeks, setHiddenWeeks] = useState<Set<number>>(() => {
@@ -442,6 +468,35 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
             </div>
           )}
 
+          {/* Monday Night Football Dimming Toggle */}
+          <button
+            type="button"
+            id="btn-toggle-grey-out-mnf"
+            onClick={() => handleToggleGreyOutMonday(!isGreyOutMondayNight)}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition cursor-pointer shrink-0 ${
+              isGreyOutMondayNight
+                ? 'bg-slate-800 border-indigo-500/80 text-indigo-300 shadow-sm shadow-indigo-950/50 ring-1 ring-indigo-500/40'
+                : 'bg-slate-950 border-slate-800 text-slate-300 hover:text-white hover:bg-slate-850'
+            }`}
+            title={
+              isGreyOutMondayNight
+                ? 'Monday night games are greyed out across the matrix. Click to restore full heatmap colors.'
+                : 'Click to grey out Monday night games across the matrix'
+            }
+          >
+            <Moon className={`w-3.5 h-3.5 ${isGreyOutMondayNight ? 'text-indigo-400 fill-indigo-400/20' : 'text-slate-400'}`} />
+            <span>Grey Out MNF</span>
+            <span
+              className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${
+                isGreyOutMondayNight
+                  ? 'bg-indigo-900/90 text-indigo-200 border border-indigo-700'
+                  : 'bg-slate-800 text-slate-400'
+              }`}
+            >
+              {isGreyOutMondayNight ? 'ON' : 'OFF'}
+            </span>
+          </button>
+
           {/* Sort Dropdown Selector */}
           <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-xs">
             <span className="text-slate-400 font-mono text-[11px]">Sort:</span>
@@ -515,6 +570,24 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
               </span>
               <span className="text-[11px] text-amber-300 hidden md:inline" title="Fox Sports closing odds replace Home/Away/Intl when week is locked">
                 Fox Sports Closing
+              </span>
+            </div>
+            <div className="flex items-center gap-1 pl-2 border-l border-slate-700/80">
+              <span
+                className={`inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] font-mono font-bold ${
+                  isGreyOutMondayNight
+                    ? 'bg-slate-800 text-slate-400 border border-slate-700'
+                    : 'bg-indigo-950/90 text-indigo-300 border border-indigo-700/70'
+                }`}
+              >
+                <Moon className={`w-2.5 h-2.5 ${isGreyOutMondayNight ? 'text-slate-400' : 'text-indigo-400'}`} />
+                MNF
+              </span>
+              <span
+                className={`text-[11px] hidden md:inline ${isGreyOutMondayNight ? 'text-slate-400' : 'text-indigo-300'}`}
+                title="Monday Night Football games"
+              >
+                {isGreyOutMondayNight ? 'MNF (Greyed Out)' : 'Monday Night'}
               </span>
             </div>
           </div>
@@ -847,6 +920,7 @@ export const SurvivorMatrix: React.FC<SurvivorMatrixProps> = ({
                         isTeamUsedInFutureWeek={isTeamUsedInFutureWeek}
                         usedWeekNumber={pickedWeek}
                         isCurrentWeek={isCurrent || isWeekSorted}
+                        greyOutMondayNight={isGreyOutMondayNight}
                         onCellClick={onCellClick}
                       />
                     );

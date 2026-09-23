@@ -12,6 +12,7 @@ import {
   CheckCircle,
   AlertCircle,
   Shield,
+  Moon,
 } from 'lucide-react';
 
 interface SettingsModalProps {
@@ -149,6 +150,50 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Matrix Visual Preferences: Grey Out MNF */}
+          <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Moon className="w-4 h-4 text-indigo-400" />
+                <span className="text-xs font-semibold text-slate-200">
+                  Grey Out Monday Night (MNF) Games
+                </span>
+                <span
+                  className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-bold ${
+                    settings.greyOutMondayNight
+                      ? 'bg-indigo-900 text-indigo-200 border border-indigo-700'
+                      : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  {settings.greyOutMondayNight ? 'ACTIVE' : 'OFF'}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Visually dims Monday Night Football matchups across the matrix grid so you can prioritize Sunday slate decisions.
+              </p>
+            </div>
+            <button
+              type="button"
+              id="settings-toggle-mnf"
+              onClick={() =>
+                onUpdateSettings({
+                  ...settings,
+                  greyOutMondayNight: !settings.greyOutMondayNight,
+                })
+              }
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                settings.greyOutMondayNight ? 'bg-indigo-600' : 'bg-slate-800'
+              }`}
+              title="Toggle Monday Night Games dimming"
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                  settings.greyOutMondayNight ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
           </div>
 
           {/* JSON Backup & Restore */}
